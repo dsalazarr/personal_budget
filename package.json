@@ -6,11 +6,25 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "mocha"
   },
   "dependencies": {
+    "@emotion/react": "^11.8.1",
+    "@emotion/styled": "^11.8.1",
+    "@mui/material": "^5.4.4",
+    "@mui/x-data-grid": "^5.6.0",
+    "axios": "^0.26.0",
+    "csv": "^6.0.5",
+    "date-fns": "^2.28.0",
+    "formidable": "^2.0.1",
+    "fs": "^0.0.1-security",
+    "mocha": "^9.2.1",
+    "multer": "^1.4.4",
     "next": "12.1.0",
+    "next-connect": "^0.12.2",
     "react": "17.0.2",
+    "react-csv": "^2.2.2",
     "react-dom": "17.0.2"
   },
   "devDependencies": {

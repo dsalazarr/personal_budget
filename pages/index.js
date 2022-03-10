@@ -1,8 +1,26 @@
+import { Box, Button } from '@mui/material'
 import Head from 'next/head'
-import Image from 'next/image'
+import { useState } from 'react'
+import { CSVLink } from 'react-csv'
+import ExpensesTable from '../components/expensesTable'
+import updateCategoriesMapping, { getTransformedExpensesFromCsv } from '../components/services/services'
 import styles from '../styles/Home.module.css'
+import { getCategories } from '../utils/utils'
 
-export default function Home() {
+export default function Home({ categories1, categories2 }) {
+  const [records, setRecords] = useState([])
+
+  const handleSubmit = async (event) => {
+    const file = event.target.files[0]
+
+    if (!file) {
+      return
+    }
+
+    const expenses = await getTransformedExpensesFromCsv(file)
+    setRecords(expenses);
+  }
+
   return (
     <div className={styles.container}>
       <Head>
@@ -13,57 +31,40 @@ export default function Home() {
 
       <main className={styles.main}>
         <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+          Personal budget
         </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+        <Box m={4} display="flex" alignItems="center" justifyContent="flex-end" width="100%">
+          <Form onSubmit={(event) => handleSubmit(event)} />
+          <Box mx={2}>
+            <CSVLink data={records} mx={2}><Button variant="contained" component="label" disabled={!records.length}>Export CSV</Button></CSVLink>
+          </Box>
+        </Box>
+        <ExpensesTable data={records} categories1={categories1} categories2={categories2} handleChange={updateCategoriesMapping}/>
+     </main>
     </div>
   )
+}
+
+export function Form({ onSubmit }) {
+
+  return (
+    <Button
+      variant="contained"
+      component="label"
+    >
+      Upload File
+      <input
+        type="file"
+        hidden
+        onChange={onSubmit}
+      />
+    </Button>
+  )
+}
+
+export async function getServerSideProps(context) {
+  const data = getCategories()
+  return {
+    props: {categories1: data.categories1, categories2: data.categories2}
+  }
 }
