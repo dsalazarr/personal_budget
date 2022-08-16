@@ -28,23 +28,25 @@ export default function ExpensesTable({data, categories1, categories2, handleCha
                                         id="categories1"
                                         options={categories1}
                                         defaultValue={item.category1}
+                                        // value={item.category1}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => <TextField {...params} label="Category"/>}
-                                        onChange={(event, newValue) =>
-                                          handleChange("categories1", newValue, item.movement)
-                                        }
+                                        onChange={(event, newValue) => {
+                                            handleChange("categories1", newValue, item.movement)
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell>
                                     <Autocomplete
                                         id="categories2"
                                         defaultValue={item.category2}
+                                        // value={item.category2}
                                         options={categories2}
                                         sx={{ width: 300 }}
                                         renderInput={(params) => <TextField {...params} label="Subcategory"/>}
-                                        onChange={(event, newValue) =>
-                                          handleChange("categories2", newValue, item.movement)
-                                        }
+                                        onChange={(event, newValue) => {
+                                            handleChange("categories2", newValue, item.movement)
+                                        }}
                                     />
                                 </TableCell>
                                 <TableCell>{item.import} €</TableCell>

@@ -1,10 +1,10 @@
 import { writeFileSync } from "fs";
 import nextConnect from "next-connect";
-import { getCategories } from "../../utils/utils";
+import { getCategories, writeCategoriesMapping } from "../../utils/utils";
 
 const apiRoute = nextConnect({})
 
-apiRoute.post((req, res) => {
+apiRoute.post(async (req, res) => {
     const {field, movement, value} = req.body;
 
     const categoriesData = getCategories();
@@ -13,7 +13,7 @@ apiRoute.post((req, res) => {
     const newData = {
         ...categoriesData, [field + "Mapping"]: newMapping
     }
-    writeFileSync(dataDirectory + '/data.json', JSON.stringify(newData))
+    writeCategoriesMapping(newData)
     res.status(204).json({})
 })
 

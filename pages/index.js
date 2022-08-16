@@ -2,23 +2,36 @@ import { Box, Button } from '@mui/material'
 import Head from 'next/head'
 import { useState } from 'react'
 import { CSVLink } from 'react-csv'
-import ExpensesTable from '../components/expensesTable'
-import updateCategoriesMapping, { getTransformedExpensesFromCsv } from '../components/services/services'
+import ExpensesTable from '../components/ExpensesTable'
+import UploadCsv from '../components/UploadCsv'
+import updateCategoriesMapping, { getTransformedExpensesFromCsv } from '../services/services'
 import styles from '../styles/Home.module.css'
 import { getCategories } from '../utils/utils'
 
 export default function Home({ categories1, categories2 }) {
   const [records, setRecords] = useState([])
+  const [error, setError] = useState('')
 
   const handleSubmit = async (event) => {
     const file = event.target.files[0]
-
+    console.log('handle submit')
     if (!file) {
       return
     }
 
-    const expenses = await getTransformedExpensesFromCsv(file)
-    setRecords(expenses);
+    console.log('calling api')
+    const {data, error} = await getTransformedExpensesFromCsv(file)
+    console.log('data ', data)
+    console.log('error ', error)
+    if (data) {
+      setRecords(data);
+    }
+    if (error) {
+      setError("Error: something wrong happened");
+      console.log('Setting error')
+    } else {
+      setError('');
+    }
   }
 
   return (
@@ -33,32 +46,24 @@ export default function Home({ categories1, categories2 }) {
         <h1 className={styles.title}>
           Personal budget
         </h1>
+        <div>{error}</div>
         <Box m={4} display="flex" alignItems="center" justifyContent="flex-end" width="100%">
-          <Form onSubmit={(event) => handleSubmit(event)} />
+          <UploadCsv onSubmit={(event) => {
+            console.log('onSubmit')
+            handleSubmit(event)
+          }} />
           <Box mx={2}>
-            <CSVLink data={records} mx={2}><Button variant="contained" component="label" disabled={!records.length}>Export CSV</Button></CSVLink>
+            <CSVLink data={records} mx={2}>
+              <Button 
+                color="success"
+                variant="contained" component="label" disabled={!records?.length}
+              >Export CSV</Button>
+            </CSVLink>
           </Box>
         </Box>
         <ExpensesTable data={records} categories1={categories1} categories2={categories2} handleChange={updateCategoriesMapping}/>
      </main>
     </div>
-  )
-}
-
-export function Form({ onSubmit }) {
-
-  return (
-    <Button
-      variant="contained"
-      component="label"
-    >
-      Upload File
-      <input
-        type="file"
-        hidden
-        onChange={onSubmit}
-      />
-    </Button>
   )
 }
 
